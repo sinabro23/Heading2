@@ -42,6 +42,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess = "true"))
 	class USoundCue* AttackSound;
 
+	UPROPERTY()
+	int32 AttackIndex = 0;
 public:
 	void UpDown(float Value);
 	void LeftRight(float Value);

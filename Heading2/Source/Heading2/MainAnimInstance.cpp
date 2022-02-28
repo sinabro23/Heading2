@@ -37,3 +37,19 @@ void UMainAnimInstance::PlayAttackMontage()
 {
 	Montage_Play(AttackMontage, 1.f);
 }
+
+void UMainAnimInstance::JumpToSection(int32 MontageSection)
+{
+	FName Name = GetAttackMontageName(MontageSection);
+	Montage_JumpToSection(Name, AttackMontage);
+}
+
+FName UMainAnimInstance::GetAttackMontageName(int32 MontageSection)
+{
+	return FName(*FString::Printf(TEXT("Attack%d"), MontageSection)); // 어택몽타주에서 만든 섹션 가져오는것
+}
+
+void UMainAnimInstance::AnimNotify_AttackHit()
+{
+	UE_LOG(LogTemp, Log, TEXT("AnimNotify_AttackHit"));
+}

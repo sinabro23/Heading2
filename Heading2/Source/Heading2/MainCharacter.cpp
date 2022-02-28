@@ -115,6 +115,10 @@ void AMainCharacter::Attack()
 		return; 
 
 	AnimInstance->PlayAttackMontage();
+	AnimInstance->JumpToSection(AttackIndex);
+
+	AttackIndex = (AttackIndex + 1) % 3;
+
 	UGameplayStatics::PlaySound2D(this, AttackSound);
 
 	IsAttacking = true;
