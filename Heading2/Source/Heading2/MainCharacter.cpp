@@ -5,6 +5,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MainAnimInstance.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -36,12 +40,20 @@ AMainCharacter::AMainCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.f, 0.f);
 
+	static ConstructorHelpers::FObjectFinder<USoundCue> SC_ATTACK(TEXT("SoundCue'/Game/_MyContents/Character/Sound/Kwang_Effort_Attack.Kwang_Effort_Attack'"));
+	if (SC_ATTACK.Succeeded())
+	{
+		AttackSound = SC_ATTACK.Object;
+	}
 }
 
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AnimInstance = Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->OnMontageEnded.AddDynamic(this, &AMainCharacter::OnAttackMontageEnded); // 바인드될 함수의 인자는 OnMontageEnded 정의 추적해서 들어가보면 있음
 	
 }
 
@@ -56,6 +68,9 @@ void AMainCharacter::Tick(float DeltaTime)
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMainCharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMainCharacter::Attack);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMainCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMainCharacter::LeftRight);
@@ -92,5 +107,21 @@ void AMainCharacter::Yaw(float Value)
 void AMainCharacter::Pitch(float Value)
 {
 	AddControllerPitchInput(Value);
+}
+
+void AMainCharacter::Attack()
+{
+	if (IsAttacking)
+		return; 
+
+	AnimInstance->PlayAttackMontage();
+	UGameplayStatics::PlaySound2D(this, AttackSound);
+
+	IsAttacking = true;
+}
+
+void AMainCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
 }
 

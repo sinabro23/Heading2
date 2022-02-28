@@ -14,10 +14,22 @@ class HEADING2_API UMainAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	
+public:
+	UMainAnimInstance();
+
 protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override; 
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float Speed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool IsFalling;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage;
+
+public:
+	void PlayAttackMontage();
 };
