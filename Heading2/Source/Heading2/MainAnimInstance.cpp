@@ -51,5 +51,6 @@ FName UMainAnimInstance::GetAttackMontageName(int32 MontageSection)
 
 void UMainAnimInstance::AnimNotify_AttackHit()
 {
-	UE_LOG(LogTemp, Log, TEXT("AnimNotify_AttackHit"));
+	//UE_LOG(LogTemp, Log, TEXT("AnimNotify_AttackHit"));
+	OnAttackHit.Broadcast(); // 이 함수에서 방송하는거에 관심있는 객체들은 OnAttackHit을 구독해서 메시지를 받아보면 된다. 이경우에는 메인캐릭터에서 받을예정
 }

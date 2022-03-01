@@ -19,6 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void PostInitializeComponents() override; // 직접 선언했음, 모든 컴포넌트들이 초기화 되고 난 이후
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -51,6 +52,7 @@ public:
 	void Pitch(float Value);
 
 	void Attack(); // 캐릭터에서 애님인스턴스에 접근해서 몽타주 틀어주게만들것임.
+	void AttackCheck();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted); // 델리게이트 해서 몽타주끝나면 호출할 함수.

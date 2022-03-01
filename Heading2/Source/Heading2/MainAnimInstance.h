@@ -9,6 +9,7 @@
 /**
  *  애니메이션과 관련된 정보를 담는 클래스
  */
+DECLARE_MULTICAST_DELEGATE(FOnAttackHit); //FOnAttackHit은 커스텀.
 UCLASS()
 class HEADING2_API UMainAnimInstance : public UAnimInstance
 {
@@ -38,4 +39,7 @@ public:
 private:
 	UFUNCTION()
 	void AnimNotify_AttackHit(); // 함수 이름 규격있음 
+
+public:
+	FOnAttackHit OnAttackHit;
 };

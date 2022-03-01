@@ -8,6 +8,7 @@
 #include "MainAnimInstance.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 
 // Sets default values
@@ -52,9 +53,19 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AnimInstance = Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance());
-	AnimInstance->OnMontageEnded.AddDynamic(this, &AMainCharacter::OnAttackMontageEnded); // 바인드될 함수의 인자는 OnMontageEnded 정의 추적해서 들어가보면 있음
 	
+}
+
+void AMainCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AnimInstance = Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMainCharacter::OnAttackMontageEnded); // 바인드될 함수의 인자는 OnMontageEnded 정의 추적해서 들어가보면 있음
+		AnimInstance->OnAttackHit.AddUObject(this, &AMainCharacter::AttackCheck); // 애님인스턴스에서 만든 델리게이트를 구독한것/ OnAttackHit에서 브로드캐스트하면 AttackCheck 함수 실행
+	}
 }
 
 // Called every frame
@@ -81,6 +92,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void AMainCharacter::UpDown(float Value)
 {
+	if (IsAttacking)
+		return;
 	// 정면기준으로 앞으로가야하고
 	const FRotator ControllerRotator = Controller->GetControlRotation();
 	const FRotator RotatorYaw = FRotator(0.f, ControllerRotator.Yaw, 0.f);
@@ -91,6 +104,8 @@ void AMainCharacter::UpDown(float Value)
 
 void AMainCharacter::LeftRight(float Value)
 {
+	if (IsAttacking)
+		return;
 	// 정면기준으로 오른쪽으로 가야하니깐
 	const FRotator ControllerRotator = Controller->GetControlRotation();
 	const FRotator RotatorYaw = FRotator(0.f, ControllerRotator.Yaw, 0.f);
@@ -122,6 +137,42 @@ void AMainCharacter::Attack()
 	UGameplayStatics::PlaySound2D(this, AttackSound);
 
 	IsAttacking = true;
+}
+
+void AMainCharacter::AttackCheck()
+{
+	// 애님 인스턴스에서 만든 애님 노티파이가 충돌 체크할 타이밍이라고 알려주는것임.
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+
+	float AttackRange = 150.f;
+	float AttackRadius = 50.f;
+
+	// 충돌체크 함수
+	bool bSweepResult = GetWorld()->SweepSingleByChannel(  
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel2, // config폴더의 DefaultEngine.ini 참고하면 있음 에디터에서 만든 Attack채널이 2번으로 설정 되어있음
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params);
+
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat(); // 잘 모르겠네
+	FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.f;
+
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
 }
 
 void AMainCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
