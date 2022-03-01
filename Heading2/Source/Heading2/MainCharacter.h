@@ -43,6 +43,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess = "true"))
 	class USoundCue* AttackSound;
 
+	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess = "true"))
+	UParticleSystemComponent* RightHandBuff;
+
+	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess = "true"))
+	UParticleSystemComponent* LeftHandBuff;
+
 	UPROPERTY()
 	int32 AttackIndex = 0;
 public:

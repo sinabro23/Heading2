@@ -9,7 +9,8 @@
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
-
+#include "Particles/ParticleSystemComponent.h"
+#include "HandBuff.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -46,6 +47,24 @@ AMainCharacter::AMainCharacter()
 	{
 		AttackSound = SC_ATTACK.Object;
 	}
+
+	//static ConstructorHelpers::FObjectFinder<UParticleSystem> PS_Buff(TEXT("ParticleSystem'/Game/_MyContents/FX/P_KwangBuff.P_KwangBuff'"));
+	//FName BuffRightSocket(TEXT("hand_r_socket"));
+	//FName BuffLeftSocket(TEXT("hand_l_socket"));
+	//if (GetMesh()->DoesSocketExist(BuffRightSocket) && GetMesh()->DoesSocketExist(BuffLeftSocket))
+	//{
+	//	RightHandBuff = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("RIGHTHANDBUFF"));
+	//	LeftHandBuff = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LEFTHANDBUFF"));
+
+	//	if (PS_Buff.Succeeded())
+	//	{
+	//		RightHandBuff->SetTemplate(PS_Buff.Object);
+	//		LeftHandBuff->SetTemplate(PS_Buff.Object);
+	//	}
+
+	//	RightHandBuff->SetupAttachment(GetMesh(), BuffRightSocket);
+	//	LeftHandBuff->SetupAttachment(GetMesh(), BuffLeftSocket);
+	//}
 }
 
 // Called when the game starts or when spawned
@@ -53,7 +72,27 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	FName BuffRightSocket(TEXT("hand_r_socket"));
+	FName BuffLeftSocket(TEXT("hand_l_socket"));
+
+	auto RHandBuff = GetWorld()->SpawnActor<AHandBuff>(FVector::ZeroVector, FRotator::ZeroRotator);
+	auto LHandBuff = GetWorld()->SpawnActor<AHandBuff>(FVector::ZeroVector, FRotator::ZeroRotator);
+	if (RHandBuff)
+	{
+		RHandBuff->AttachToComponent(
+			GetMesh(),
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			BuffRightSocket);
+	}
+
+	if (LHandBuff)
+	{
+		LHandBuff->AttachToComponent(
+			GetMesh(),
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			BuffLeftSocket);
+	}
+
 }
 
 void AMainCharacter::PostInitializeComponents()
