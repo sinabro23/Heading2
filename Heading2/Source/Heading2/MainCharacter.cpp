@@ -121,6 +121,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMainCharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMainCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("EKey"), EInputEvent::IE_Pressed, this, &AMainCharacter::EKey);
 
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &AMainCharacter::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AMainCharacter::LeftRight);
@@ -212,6 +213,18 @@ void AMainCharacter::AttackCheck()
 		DrawColor,
 		false,
 		DebugLifeTime);
+}
+
+void AMainCharacter::EKey()
+{
+	if (bIsEkeyPressed)
+	{
+		bIsEkeyPressed = false;
+	}
+	else
+	{
+		bIsEkeyPressed = true;
+	}
 }
 
 void AMainCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

@@ -51,6 +51,10 @@ private:
 
 	UPROPERTY()
 	int32 AttackIndex = 0;
+
+	UPROPERTY()
+	bool bIsEkeyPressed = false;
+
 public:
 	void UpDown(float Value);
 	void LeftRight(float Value);
@@ -59,6 +63,8 @@ public:
 
 	void Attack(); // 캐릭터에서 애님인스턴스에 접근해서 몽타주 틀어주게만들것임.
 	void AttackCheck();
+
+	void EKey();
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted); // 델리게이트 해서 몽타주끝나면 호출할 함수.
