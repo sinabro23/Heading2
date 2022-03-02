@@ -215,6 +215,10 @@ void AMainCharacter::AttackCheck()
 		DebugLifeTime);
 }
 
+void AMainCharacter::GetPotion()
+{
+}
+
 void AMainCharacter::EKey()
 {
 	if (bIsEkeyPressed)

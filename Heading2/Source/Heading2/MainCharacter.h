@@ -64,6 +64,9 @@ public:
 	void Attack(); // 캐릭터에서 애님인스턴스에 접근해서 몽타주 틀어주게만들것임.
 	void AttackCheck();
 
+	void GetPotion();
+
+
 	void EKey();
 
 	UFUNCTION()
