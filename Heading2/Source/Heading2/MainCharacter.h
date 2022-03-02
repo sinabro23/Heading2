@@ -20,6 +20,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override; // 직접 선언했음, 모든 컴포넌트들이 초기화 되고 난 이후
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -33,7 +35,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArm;
-	
+
+	UPROPERTY(VisibleAnywhere)
+	class UStatComponent* StatComponent;
+
 	UPROPERTY(VisibleAnywhere, Category = Pawn, Meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking = false;
 
@@ -48,6 +53,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Meta = (AllowPrivateAccess = "true"))
 	UParticleSystemComponent* LeftHandBuff;
+
+	UPROPERTY(VisibleAnywhere, Meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* HPBarWidgetComponent;
 
 	UPROPERTY()
 	int32 AttackIndex = 0;

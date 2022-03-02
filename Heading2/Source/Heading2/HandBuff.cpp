@@ -11,7 +11,8 @@ AHandBuff::AHandBuff()
 	PrimaryActorTick.bCanEverTick = false;
 
 	BuffFX = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("BuffFX"));
-	
+	SetRootComponent(BuffFX);
+
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> PS_Buff(TEXT("ParticleSystem'/Game/_MyContents/FX/P_KwangBuff.P_KwangBuff'"));
 
 	if (PS_Buff.Succeeded())

@@ -9,7 +9,7 @@
 AHPPotion::AHPPotion()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	PotionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("POTION"));
 	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("TRIGGER"));
@@ -27,6 +27,7 @@ AHPPotion::AHPPotion()
 	Trigger->SetCollisionProfileName(TEXT("Collectible"));
 	Trigger->SetBoxExtent(FVector(30.f, 30.f, 30.f));
 
+	
 }
 
 // Called when the game starts or when spawned
@@ -40,16 +41,10 @@ void AHPPotion::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-}
-
-// Called every frame
-void AHPPotion::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AHPPotion::OnCharacterOverlapped);
-
 }
+
+
 
 void AHPPotion::OnCharacterOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

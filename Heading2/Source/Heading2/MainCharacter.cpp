@@ -11,6 +11,9 @@
 #include "DrawDebugHelpers.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "HandBuff.h"
+#include "StatComponent.h"
+#include "Components/WidgetComponent.h"
+#include "HPBarWidget.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -48,6 +51,20 @@ AMainCharacter::AMainCharacter()
 		AttackSound = SC_ATTACK.Object;
 	}
 
+	StatComponent = CreateDefaultSubobject<UStatComponent>(TEXT("STAT"));
+
+	HPBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBAR"));
+	HPBarWidgetComponent->SetupAttachment(GetMesh());
+	HPBarWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+	HPBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen); // 월드에 배치할지 아니면 화면에 계속 보이는 2D처럼 배치할지 SCREEN은 잘리지 않음
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> W_HPBAR(TEXT("WidgetBlueprint'/Game/_MyContents/UI/WBP_HPBar.WBP_HPBar_C'"));
+	if (W_HPBAR.Succeeded())
+	{
+		HPBarWidgetComponent->SetWidgetClass(W_HPBAR.Class);
+		HPBarWidgetComponent->SetDrawSize(FVector2D(200.f, 50.f));
+	} // UI PostInitializeComponent 에서 초기화했음
+#pragma region Reference
 	//static ConstructorHelpers::FObjectFinder<UParticleSystem> PS_Buff(TEXT("ParticleSystem'/Game/_MyContents/FX/P_KwangBuff.P_KwangBuff'"));
 	//FName BuffRightSocket(TEXT("hand_r_socket"));
 	//FName BuffLeftSocket(TEXT("hand_l_socket"));
@@ -65,6 +82,7 @@ AMainCharacter::AMainCharacter()
 	//	RightHandBuff->SetupAttachment(GetMesh(), BuffRightSocket);
 	//	LeftHandBuff->SetupAttachment(GetMesh(), BuffLeftSocket);
 	//}
+#pragma endregion
 }
 
 // Called when the game starts or when spawned
@@ -105,6 +123,21 @@ void AMainCharacter::PostInitializeComponents()
 		AnimInstance->OnMontageEnded.AddDynamic(this, &AMainCharacter::OnAttackMontageEnded); // 바인드될 함수의 인자는 OnMontageEnded 정의 추적해서 들어가보면 있음
 		AnimInstance->OnAttackHit.AddUObject(this, &AMainCharacter::AttackCheck); // 애님인스턴스에서 만든 델리게이트를 구독한것/ OnAttackHit에서 브로드캐스트하면 AttackCheck 함수 실행
 	}
+
+	HPBarWidgetComponent->InitWidget();
+	// HP UI관련 
+	auto HPWidget = Cast<UHPBarWidget>(HPBarWidgetComponent->GetUserWidgetObject());
+	if (HPWidget)
+	{
+		HPWidget->BindHP(StatComponent);
+	}
+}
+
+float AMainCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	StatComponent->OnAttacked(DamageAmount);
+
+	return DamageAmount;
 }
 
 // Called every frame
@@ -189,7 +222,7 @@ void AMainCharacter::AttackCheck()
 	float AttackRadius = 50.f;
 
 	// 충돌체크 함수
-	bool bSweepResult = GetWorld()->SweepSingleByChannel(  
+	bool bResult = GetWorld()->SweepSingleByChannel(  
 		HitResult,
 		GetActorLocation(),
 		GetActorLocation() + GetActorForwardVector() * AttackRange,
@@ -202,7 +235,7 @@ void AMainCharacter::AttackCheck()
 	FVector Center = GetActorLocation() + TraceVec * 0.5f;
 	float HalfHeight = AttackRange * 0.5f + AttackRadius;
 	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat(); // 잘 모르겠네
-	FColor DrawColor = bSweepResult ? FColor::Green : FColor::Red;
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
 	float DebugLifeTime = 5.f;
 
 	DrawDebugCapsule(GetWorld(),
@@ -213,6 +246,15 @@ void AMainCharacter::AttackCheck()
 		DrawColor,
 		false,
 		DebugLifeTime);
+
+	if (bResult && HitResult.Actor.IsValid())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
+
+		FDamageEvent DamageEvent;
+		HitResult.Actor->TakeDamage(StatComponent->GetAttack(), DamageEvent, GetController(), this); // 언리얼에서 직접 제공하는 함수지만 가상함수라 정의해야함
+	}
+
 }
 
 void AMainCharacter::GetPotion()
