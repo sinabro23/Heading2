@@ -116,7 +116,7 @@ void AMainCharacter::BeginPlay()
 	}
 
 
-	if (GetController()->IsLocalPlayerController()) // ÇÃ·¹ÀÌ¾î ¸Þ½¬ »ó´Ü¿¡ ¶ß´Â À§Á¬ ²ô±â
+	if (GetController()->IsPlayerController()) // ÇÃ·¹ÀÌ¾î ¸Þ½¬ »ó´Ü¿¡ ¶ß´Â À§Á¬ ²ô±â
 	{
 		HPBarWidgetComponent->SetVisibility(false);
 	}
@@ -286,5 +286,6 @@ void AMainCharacter::EKey()
 void AMainCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsAttacking = false;
+	OnAttackEnd.Broadcast();
 }
 

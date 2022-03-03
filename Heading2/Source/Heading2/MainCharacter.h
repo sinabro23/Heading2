@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+
 UCLASS()
 class HEADING2_API AMainCharacter : public ACharacter
 {
@@ -63,6 +65,7 @@ private:
 	UPROPERTY()
 	bool bIsEkeyPressed = false;
 
+
 public:
 	void UpDown(float Value);
 	void LeftRight(float Value);
@@ -71,6 +74,7 @@ public:
 
 	void Attack(); // 캐릭터에서 애님인스턴스에 접근해서 몽타주 틀어주게만들것임.
 	void AttackCheck();
+	FOnAttackEnd OnAttackEnd; // 어택 끝날때 BehaviorTree에 알려주기 위함
 
 	void GetPotion();
 
