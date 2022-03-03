@@ -111,6 +111,12 @@ void AMainCharacter::BeginPlay()
 			BuffLeftSocket);
 	}
 
+
+	if (GetController()->IsLocalPlayerController()) // ÇÃ·¹ÀÌ¾î »ó´Ü¿¡ ¶ß´Â À§Á¬ ²ô±â
+	{
+		HPBarWidgetComponent->SetVisibility(false);
+	}
+
 }
 
 void AMainCharacter::PostInitializeComponents()
