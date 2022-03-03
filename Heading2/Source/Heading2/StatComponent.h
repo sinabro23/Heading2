@@ -29,7 +29,10 @@ public:
 	int32 GetLevel() { return Level; }
 	int32 GetHP() { return HP; }
 	int32 GetMaxHP() { return HP; }
+
+	UFUNCTION(BlueprintCallable)
 	float GetHPRatio() { return HP / (float)(MaxHP); }
+	
 	int32 GetAttack() { return Attack; }
 
 

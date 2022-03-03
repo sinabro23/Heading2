@@ -36,8 +36,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere)
-	class UStatComponent* StatComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = "true"))
+	class UStatComponent* StatComponent; // 여기에 스탯관련것들 들어있음
 
 	UPROPERTY(VisibleAnywhere, Category = Pawn, Meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking = false;
