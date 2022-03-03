@@ -7,7 +7,7 @@
 #include "MainPlayerController.generated.h"
 
 /**
- * 
+ *  HUD를위해 처음으로 만든 클래스 
  */
 UCLASS()
 class HEADING2_API AMainPlayerController : public APlayerController

@@ -14,7 +14,7 @@
 #include "StatComponent.h"
 #include "Components/WidgetComponent.h"
 #include "HPBarWidget.h"
-
+#include "MainAIController.h"
 // Sets default values
 AMainCharacter::AMainCharacter()
 {
@@ -83,6 +83,10 @@ AMainCharacter::AMainCharacter()
 	//	LeftHandBuff->SetupAttachment(GetMesh(), BuffLeftSocket);
 	//}
 #pragma endregion
+
+	// AI관련
+	AIControllerClass = AMainAIController::StaticClass(); // AIControllerClass는 기본적으로 있는 변수. 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // 월드에 배치되거나 스폰되면 자동으로 포제스 됨.
 }
 
 // Called when the game starts or when spawned
@@ -112,7 +116,7 @@ void AMainCharacter::BeginPlay()
 	}
 
 
-	if (GetController()->IsLocalPlayerController()) // 플레이어 상단에 뜨는 위젯 끄기
+	if (GetController()->IsLocalPlayerController()) // 플레이어 메쉬 상단에 뜨는 위젯 끄기
 	{
 		HPBarWidgetComponent->SetVisibility(false);
 	}
